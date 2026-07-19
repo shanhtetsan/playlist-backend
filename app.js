@@ -25,6 +25,14 @@ app.use((req, res) => {
   res.status(404).json({ error: "Not found" });
 });
 
+// Catch malformed JSON bodies (e.g. empty or invalid JSON)
+app.use((err, req, res, next) => {
+  if (err.type === "entity.parse.failed") {
+    return res.status(400).json({ error: "Invalid JSON in request body" });
+  }
+  next(err);
+});
+
 // Error-handling middleware: FOUR params, and it lives LAST
 app.use((err, req, res, next) => {
   console.error(err);

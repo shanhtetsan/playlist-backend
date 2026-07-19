@@ -38,11 +38,22 @@ router.post("/", requireNameAndDescription, async (req, res, next) => {
 });
 
 // UPDATE a playlist
-router.patch("/:id", async (req, res) => {
-  const playlist = await Playlist.findByPk(req.params.id);
-  if (!playlist) return res.status(404).json({ error: "Playlist not found" });
-  await playlist.update(req.body);
-  res.json(playlist);
+
+router.patch("/:id", async (req, res, next) => {
+  try {
+    const playlist = await Playlist.findByPk(req.params.id);
+    if (!playlist) return res.status(404).json({ error: "Playlist not found" });
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({ error: "Request body is required" });
+    }
+    await playlist.update(req.body);
+    res.json(playlist);
+  } catch (err) {
+    if (err.name === "SequelizeValidationError") {
+      return res.status(400).json({ error: err.errors[0].message });
+    }
+    next(err);
+  }
 });
 
 // DELETE a playlist (and its songs, so none are left orphaned)
