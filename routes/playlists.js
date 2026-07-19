@@ -39,6 +39,15 @@ router.get("/:id/songs", async (req, res) => {
   res.json(songs);
 });
 
+router.get("/:id", async (req, res) => {
+  const playlist = await Playlist.findByPk(req.params.id, {
+    include: Song,
+    order: [[Song, "order", "ASC"]],
+  });
+  if (!playlist) return res.status(404).json({ error: "Playlist not found" });
+  res.json(playlist);
+});
+
 // CREATE a playlist
 router.post("/", requireNameAndDescription, async (req, res, next) => {
   try {
@@ -67,6 +76,30 @@ router.patch("/:id", async (req, res, next) => {
     if (err.name === "SequelizeValidationError") {
       return res.status(400).json({ error: err.errors[0].message });
     }
+    next(err);
+  }
+});
+
+// REORDER songs in this playlist
+router.patch("/:id/songs/reorder", async (req, res, next) => {
+  try {
+    const { songIds } = req.body; // array of song ids, in desired order
+    if (!Array.isArray(songIds)) {
+      return res.status(400).json({ error: "songIds must be an array" });
+    }
+
+    await Promise.all(
+      songIds.map((songId, index) =>
+        Song.update({ order: index }, { where: { id: songId, PlaylistId: req.params.id } })
+      )
+    );
+
+    const songs = await Song.findAll({
+      where: { PlaylistId: req.params.id },
+      order: [["order", "ASC"]],
+    });
+    res.json(songs);
+  } catch (err) {
     next(err);
   }
 });

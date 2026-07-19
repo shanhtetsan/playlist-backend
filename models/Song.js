@@ -17,6 +17,11 @@ const Song = db.define("Song", {
     allowNull: false,
     validate: { notEmpty: true },
   },
+  order: {
+  type: DataTypes.INTEGER,
+  allowNull: false,
+  defaultValue: 0,
+},
 });
 
 module.exports = Song;

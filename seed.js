@@ -8,9 +8,9 @@ async function seed() {
     description: "Relaxing songs for a slow afternoon",
   });
 
-  await Song.create({ title: "Sunset Drive", artist: "Wave Runner", duration: 210, PlaylistId: chill.id });
-  await Song.create({ title: "Slow Motion", artist: "Nova Fields", duration: 245, PlaylistId: chill.id });
-  await Song.create({ title: "Golden Hour", artist: "Marina Lights", duration: 198, PlaylistId: chill.id });
+  await Song.create({ title: "Sunset Drive", artist: "Wave Runner", duration: 210, order: 0, PlaylistId: chill.id });
+  await Song.create({ title: "Slow Motion", artist: "Nova Fields", duration: 245, order: 1, PlaylistId: chill.id });
+  await Song.create({ title: "Golden Hour", artist: "Marina Lights", duration: 198, order: 2, PlaylistId: chill.id });
 
   console.log("Seeded!");
   await db.close();
