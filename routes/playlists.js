@@ -4,8 +4,14 @@ const { Playlist, Song } = require("../models");
 
 // GET all playlists
 router.get("/", async (req, res) => {
-  const playlists = await Playlist.findAll();
-  res.json(playlists);
+  const playlists = await Playlist.findAll({
+    include: Song,
+  });
+  const playlistsWithCount = playlists.map((playlist) => ({
+    ...playlist.toJSON(),
+    songCount: playlist.Songs.length,
+  }));
+  res.json(playlistsWithCount);
 });
 
 // GET one playlist, with its songs included
@@ -23,6 +29,15 @@ function requireNameAndDescription(req, res, next) {
   }
   next();
 }
+
+// GET all songs in a specific playlist
+router.get("/:id/songs", async (req, res) => {
+  const playlist = await Playlist.findByPk(req.params.id);
+  if (!playlist) return res.status(404).json({ error: "Playlist not found" });
+
+  const songs = await Song.findAll({ where: { PlaylistId: req.params.id } });
+  res.json(songs);
+});
 
 // CREATE a playlist
 router.post("/", requireNameAndDescription, async (req, res, next) => {

@@ -1,9 +1,11 @@
 const express = require("express");
+const cors = require("cors");
 const { db } = require("./models");
 const playlistsRouter = require("./routes/playlists");
 const songsRouter = require("./routes/songs");
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 function logger(req, res, next) {
