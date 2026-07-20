@@ -5,7 +5,9 @@ const playlistsRouter = require("./routes/playlists");
 const songsRouter = require("./routes/songs");
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: ["https://playlist-frontend-liard.vercel.app", "http://localhost:5175"],
+}));
 app.use(express.json());
 
 function logger(req, res, next) {
